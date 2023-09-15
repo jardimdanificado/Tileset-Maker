@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Spritesheet Generator</title>
+    <style>
+        canvas {
+            border: 1px solid #000;
+        }
+    </style>
+</head>
+<body>
+    <h1>Image Spritesheet Generator</h1>
+    <input type="file" id="fileInput" accept="image/*" multiple>
+    <button id="generateButton">Generate Spritesheet</button>
+    <canvas id="spritesheetCanvas"></canvas>
+    <a id="downloadLink" style="display: none;" download="spritesheet.png">Download Spritesheet</a>
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const generateButton = document.getElementById('generateButton');
+        const spritesheetCanvas = document.getElementById('spritesheetCanvas');
+        const downloadLink = document.getElementById('downloadLink');
+        const ctx = spritesheetCanvas.getContext('2d');
+        const images = [];
+
+        fileInput.addEventListener('change', handleFile);
+        generateButton.addEventListener('click', generateSpritesheet);
+
+        function handleFile(event) {
+            const files = event.target.files;
+            for (const file of files) {
+                const image = new Image();
+                image.src = URL.createObjectURL(file);
+                images.push(image);
+            }
+        }
+
+        function generateSpritesheet() {
+            if (images.length === 0) {
+                alert('Nenhuma imagem foi carregada.');
+                return;
+            }
+
+            // Defina o tamanho da spritesheet com base na largura da primeira imagem e na altura total das imagens
+            const spriteWidth = images[0].width;
+            const spriteHeight = images.reduce((totalHeight, image) => totalHeight + image.height, 0);
+
+            spritesheetCanvas.width = spriteWidth;
+            spritesheetCanvas.height = spriteHeight;
+
+            // Desenhe as imagens na spritesheet
+            let yOffset = 0;
+            images.forEach((image) => {
+                ctx.drawImage(image, 0, yOffset);
+                yOffset += image.height;
+            });
+
+            // Exiba o link de download
+            downloadLink.href = spritesheetCanvas.toDataURL();
+            downloadLink.style.display = 'block';
+        }
+
+    </script>
+</body>
+</html>
